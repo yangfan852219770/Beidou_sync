@@ -15,8 +15,8 @@
 #include <fcntl.h>   /* File control def */
 #include <termios.h> /* POSIX terminal control def */
 #include <errno.h>
-
-#include "minmea.h"
+#include <stdint.h>
+#include <time.h>
 
 #define READ_MAX_LENGTH 128
 #define NSEC_PER_SEC 1000000000L

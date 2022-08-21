@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
     pps_handle_t handle;
     int avail_mode;
     pps_info_t realtime_info;
-    int res;
 
     bool res_serial;
 
@@ -47,7 +46,7 @@ int main(int argc, char *argv[])
     if (argc < 2)
         fprintf(stderr, "usage: %s Input PPS path\n", argv[0]);
 
-    res = find_source(argv[1], &handle, &avail_mode);
+    int res = find_source(argv[1], &handle, &avail_mode);
 
     if (res < 0)
     {
@@ -100,7 +99,7 @@ int main(int argc, char *argv[])
     }
     printf("Set pps kernel consumer\n");
 
-    sleep(15);
+    //sleep(15);
 
     count = 0;
     // 清除串口缓存
@@ -109,20 +108,20 @@ int main(int argc, char *argv[])
     while (1)
     {
         // pps信号时的系统时间戳
-        res = fetch_source(&handle, &avail_mode, &realtime_info);
+        int pps_res = fetch_source(&handle, &avail_mode, &realtime_info);
         if (res < 0)
         {
             while (1)
             {
-                res = fetch_source(&handle, &avail_mode, &realtime_info);
-                if (res > 0)
+                pps_res = fetch_source(&handle, &avail_mode, &realtime_info);
+                if (pps_res > 0)
                 {
                     // 绑定pps kernel consumer
                     time_pps_kcbind(handle, PPS_KC_HARDPPS, PPS_CAPTUREASSERT, PPS_TSFMT_TSPEC);
                     tx.modes = ADJ_STATUS;
                     tx.status = (STA_PPSFREQ | STA_PPSTIME);
                     adj_ret = adjtimex(&tx);
-                    sleep(15);
+                    //sleep(15);
                     // 清除串口缓存
                     tcflush(fd, TCSANOW);
                     break;
@@ -130,7 +129,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        memset(buf, 0, MINMEA_MAX_LENGTH);
+        memset(buf, 0, READ_MAX_LENGTH);
         // 读取串口数据
         read_data(fd, buf, &len, timeout);
 
@@ -140,9 +139,9 @@ int main(int argc, char *argv[])
 
         if (len > 30)
         {
-            res = nmea_parse_zda(&nmea_z, buf);
+            int zda_res = nmea_parse_zda(&nmea_z, buf);
             // 处理系统时间与卫星时间所差的整秒数
-            if (res)
+            if (zda_res)
             {
                 zda_sec = convert_to_sys_second(nmea_z.date.year, nmea_z.date.month, nmea_z.date.day,
                                                 nmea_z.time.hours, nmea_z.time.minutes, nmea_z.time.seconds);
@@ -153,7 +152,7 @@ int main(int argc, char *argv[])
                 offset_nsec = offset_sec * NSEC_PER_SEC - realtime_info.assert_timestamp.tv_nsec;
                 tx.time.tv_usec = 0;
                 tx.modes = ADJ_SETOFFSET;
-
+                printf("Now offset = %ld\n", offset_nsec);
                 if (abs(offset_nsec) >= NSEC_PER_SEC)
                 {
                     tx.time.tv_sec = offset_sec;

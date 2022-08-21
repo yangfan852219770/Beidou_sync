@@ -4,7 +4,7 @@ test: $(objs)
 	gcc -g -o $@ $^ -lwiringPi
 test.o : beidou_read.h pps_up.h
 beidou_read.o: beidou_read.h
-pps_up.o: pps_up.h pps.h
+pps_up.o: pps_up.h
 .PHONY : clean
 clean : 
 	-rm *.o

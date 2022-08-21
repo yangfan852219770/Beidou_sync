@@ -3,8 +3,6 @@
  * This program is free software.
  */ 
 #include "beidou_read.h"
-#include "minmea.h"
-
 #include <ctype.h>
 #include <sys/time.h>
 
