@@ -109,12 +109,12 @@ int main(int argc, char *argv[])
     {
         // pps信号时的系统时间戳
         int pps_res = fetch_source(&handle, &avail_mode, &realtime_info);
-        if (res < 0)
+        if (pps_res == -1)
         {
             while (1)
             {
                 pps_res = fetch_source(&handle, &avail_mode, &realtime_info);
-                if (pps_res > 0)
+                if (pps_res !=-1)
                 {
                     // 绑定pps kernel consumer
                     time_pps_kcbind(handle, PPS_KC_HARDPPS, PPS_CAPTUREASSERT, PPS_TSFMT_TSPEC);
