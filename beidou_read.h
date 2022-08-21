@@ -16,8 +16,6 @@
 #include <termios.h> /* POSIX terminal control def */
 #include <errno.h>
 
-#include "minmea.h"
-
 #define READ_MAX_LENGTH 128
 #define NSEC_PER_SEC 1000000000L
 #define BAUD_LENGTH 11
